@@ -1,4 +1,5 @@
 import os
+from cadastro_view import Cadastro
 
 class Estrutura:
     def inicio():
@@ -63,7 +64,8 @@ class Estrutura:
                     pass
 
                 elif num == 1:
-                    pass
+                    if Cadastro.cadastro_curso() == "sair":
+                        return "sair"
 
                 elif num == 2:
                     pass
