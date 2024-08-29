@@ -5,10 +5,10 @@ class ConexaoBanco:
         connection = None
         try:
             connection = connect(
-                host="",
-                user="",
+                host="localhost",
+                user="root",
                 password="",
-                database="")
+                database="crud_alunos")
         except Error as e:
             print(f"Erro ao conectar! {e}")
             connection.close()
