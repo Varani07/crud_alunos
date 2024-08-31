@@ -29,7 +29,7 @@ class Estrutura:
                     print()
                     answer = 1
                     continue
-            except:
+            except ValueError:
                 os.system("cls")
                 print("--------------------")
                 print("| DIGITE UM NUMERO |")
@@ -37,6 +37,12 @@ class Estrutura:
                 print()
                 answer = 1
                 continue
+            except Exception as e:
+                print()
+                print(f"*ERRO! {e}")
+                print()
+                print("- - - - - - - - - - - - - - - - - - - - - - ")
+                print()
     
     def opcoes(escolha):
         answer = 1
@@ -68,7 +74,8 @@ class Estrutura:
                         return "sair"
 
                 elif num == 2:
-                    pass
+                    if Cadastro.cadastro_turma() == "sair":
+                        return "sair"
 
                 elif num == 3:
                     pass
@@ -89,7 +96,7 @@ class Estrutura:
                     print()
                     answer = 1
                     continue
-            except:
+            except ValueError:
                 os.system("cls")
                 print("--------------------")
                 print("| DIGITE UM NUMERO |")
@@ -97,3 +104,9 @@ class Estrutura:
                 print()
                 answer = 1
                 continue
+            except Exception as e:
+                print()
+                print(f"*ERRO! {e}")
+                print()
+                print("- - - - - - - - - - - - - - - - - - - - - - ")
+                print()

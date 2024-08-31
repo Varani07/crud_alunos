@@ -1,24 +1,29 @@
 from conexao_banco import ConexaoBanco
 from mysql.connector import Error
 
-class SetDAO:
+class GetDAO:
     def __init__(self):
         self.connection = ConexaoBanco().get_connection()
         self.cursor = self.connection.cursor()
 
-    def cadastrar(self, tabela: str, dados: str, values: str, valor_dados: tuple, tipo: str):
+    def visualizar(self, dados: str, tabela: str, where: str, valor_dados, one: bool):
         try:
-            sql = f"INSERT INTO {tabela} ({dados}) VALUES ({values})"
+            sql = f"SELECT {dados} FROM {tabela}{where}"
 
-            self.cursor.execute(sql, valor_dados)
+            if valor_dados == "":
+                self.cursor.execute(sql)
+            else:
+                self.cursor.execute(sql, valor_dados)
+            
+            if one:
+                result = self.cursor.fetchone()
+            else:
+                result = self.cursor.fetchall()
 
-            self.connection.commit()
+
             self.cursor.close()
-
-            print(f"| {tipo.upper()} COM SUCESSO! |")
-            print("---------------------------------")
-            print()
-
+            return result
+        
         except Error as e:
             print()
             print(f"*ERRO! {e.msg}")
