@@ -133,11 +133,11 @@ class Cadastro:
                         continue
                     else:
                         # CONTINUAR AQUI
-                        info_curso = (nome, sigla)
-                        cadastrar_curso = SetDAO()
-                        cadastrar_curso.cadastrar(info_curso)
-                        nome = ""
-                        sigla = ""
+                        info_turma = (id_curso, ano_inicio)
+                        cadastrar_turma = SetDAO()
+                        cadastrar_turma.cadastrar("turmas", "id_curso, ano_inicio", "%s, %s", info_turma, "turma cadastrada")
+                        ano_inicio = ""
+                        curso = ""
 
                 elif num == 4:
                     break
