@@ -3,29 +3,29 @@ from util import EstruturaRepetivel
 from get_dao import GetDAO
 
 class Pesquisar:
-    def curso(ver_detalhes):
+    def curso(ver_detalhes, titulo: str):
         os.system("cls")
         answer = 1
         id_curso = ""
-        while 0 < answer < 7:
-            print()
-            print("-------- CURSOS CADASTRADOS --------")
-            print()
-            print()
-            print("[1] Ver todos")
-            print("[2] Pesquisar por ID")
-            print("[3] Pesquisar por nome")
-            print("[4] Pesquisar por sigla")
-            print()
-            print("[5] Voltar")
-            print("[6] Sair")
-            print()
+        tipo_interacao_plural = titulo.split(" ")[0]
+        if tipo_interacao_plural == "professores":
+            tipo_interacao = tipo_interacao_plural[:-2]
+        else:
+            tipo_interacao = tipo_interacao_plural[:-1]
+        if tipo_interacao == "turma":
+            max_num = 8
+        elif tipo_interacao == "aluno":
+            max_num = 9
+        else: 
+            max_num = 7
+        while 0 < answer < max_num:
+            EstruturaRepetivel.op_pesquisa(titulo)
             answer = input("Escolha uma opção: ")
             try:
                 num = int(answer)
                 os.system("cls")
-                if 0 < num < 5:
-                    id_curso = TelaInfo.mostrar_info(num, ver_detalhes, "curso", "cursos")
+                if 0 < num < max_num - 2:
+                    id_curso = TelaInfo.mostrar_info(num, ver_detalhes, tipo_interacao, tipo_interacao_plural)
                     if id_curso == "sair":
                         return "sair"
                     elif id_curso == None:
@@ -33,9 +33,9 @@ class Pesquisar:
                         continue
                     else:
                         return id_curso
-                elif num == 5:
+                elif num == max_num - 2:
                     break
-                elif num == 6:
+                elif num == max_num - 1:
                     return "sair"
                 else:
                     print("---------------------------")
@@ -88,24 +88,6 @@ class TelaInfo:
                             break
                         elif answer.lower() == "sair":
                             return "sair"
-                        # elif ver_detalhes:
-                        #     if answer == "+":
-                        #         answer = ""
-
-                        #         if tipo == "curso":
-                        #             if Cadastro.cadastro_curso() == "sair":
-                        #                 return "sair", ""
-                                    
-                        #         elif tipo == "turma":
-                        #             pass
-
-                        #         elif tipo == "professor":
-                        #             pass
-
-                        #         elif tipo == "aluno":
-                        #             pass
-
-                                # ADICIONAR OUTROS ACIMA
                         elif num == 2:
                             print("--------------------")
                             print("| DIGITE UM NUMERO |")
@@ -125,7 +107,7 @@ class TelaInfo:
                 EstruturaRepetivel.search_header(tipo_plural, ver_detalhes)
             
             lista_id = []
-            if num == 1:
+            if num == 1: #PESQUISAR SEM WHERE DEFINIDO
                 vis_inf = GetDAO()
 
                 if tipo == "curso":
@@ -143,11 +125,11 @@ class TelaInfo:
                 elif tipo == "aluno":
                     pass
 
-            elif num == 2:
+            elif num == 2: #FILTRAR PELO ID
                 vis_inf = GetDAO()
 
                 if tipo == "curso":
-                    pass
+                    result = vis_inf.visualizar("id_curso, nome_curso, sigla", "cursos", f" WHERE id_cursos LIKE '%{answer}%'")
                     
                 elif tipo == "turma":
                     pass
@@ -158,11 +140,11 @@ class TelaInfo:
                 elif tipo == "aluno":
                     pass
 
-            elif num == 3:
+            elif num == 3: #FILTRAR PELO NOME
                 vis_inf = GetDAO()
 
                 if tipo == "curso":
-                    pass
+                    result = vis_inf.visualizar("id_curso, nome_curso, sigla", "cursos", f" WHERE nome_curso LIKE '%{answer}%'")
                     
                 elif tipo == "turma":
                     pass
@@ -176,30 +158,44 @@ class TelaInfo:
             elif num == 4:
                 vis_inf = GetDAO()
 
-                if tipo == "curso":
-                    pass
+                if tipo == "curso": #FILTRAR POR SIGLA
+                    result = vis_inf.visualizar("id_curso, nome_curso, sigla", "cursos", f" WHERE sigla LIKE '%{answer}%'")
                     
-                elif tipo == "turma":
+                elif tipo == "turma": #FILTRAR POR CURSO
                     pass
 
-                elif tipo == "professor":
+                elif tipo == "professor": #FILTRAR POR CPF
                     pass
 
-                elif tipo == "aluno":
+                elif tipo == "aluno": #FILTRAR POR CPF
                     pass
 
             elif num == 5:
                 vis_inf = GetDAO()
 
-                if tipo == "turma":
+                if tipo == "turma": #FILTRAR POR ANO
                     pass
 
-                elif tipo == "aluno":
+                elif tipo == "aluno": #FILTRAR POR CURSO
                     pass
 
-            elif num == 6:
+            elif num == 6: #FILTRAR POR TURMA
                 vis_inf = GetDAO()
 
+            # Iterando pelos itens presentes no resultado da pesquisa
+            if tipo == "curso": 
+                for item in result:
+                    EstruturaRepetivel.print_info_curso(item[0], item[1], item[2])
+                    lista_id.append(item[0])
+                
+            elif tipo == "turma":
+                pass
+
+            elif tipo == "professor":
+                pass
+
+            elif tipo == "aluno":
+                pass
 
             if len(lista_id) == 0:
                 input(f"Zero resultados pesquisando por {answer} em {tipo_plural.upper()}")

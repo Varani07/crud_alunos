@@ -106,7 +106,7 @@ class Cadastro:
                 num = int(input("Escolha uma opção: "))
                 os.system("cls")
                 if num == 1:
-                    id_curso = Pesquisar.curso(0)
+                    id_curso = Pesquisar.curso(0, "cursos cadastrados")
                     if id_curso == "sair":
                         return "sair"
                     elif id_curso == None:
