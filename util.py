@@ -1,10 +1,8 @@
 class EstruturaRepetivel:
-    def search_header(tipo_plural: str, ver_detalhes: bool):
+    def search_header(tipo_plural: str):
         print()
         print(f"-------- {tipo_plural.title()} Cadastrados --------")
         print()
-        # if ver_detalhes:
-        #     print(f"Digite \"+\" para cadastrar mais {tipo_plural}") 
         print("Digite \"Voltar\" para voltar a página anterior")
         print("Digite \"Sair\" para sair da aplicação")
         print()

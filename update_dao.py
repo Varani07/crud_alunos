@@ -1,28 +1,23 @@
 from conexao_banco import ConexaoBanco
 from mysql.connector import Error
 
-class GetDAO:
+class UpdateDAO:
     def __init__(self):
         self.connection = ConexaoBanco().get_connection()
         self.cursor = self.connection.cursor()
 
-    def visualizar(self, dados: str, tabela: str, where: str, valor_dados: tuple, one: bool):
+    def atualizar(self, tabela: str, dados: str, where: str, tipo: str, valor_dados: tuple):
         try:
-            sql = f"SELECT {dados} FROM {tabela}{where}"
+            sql = f"UPDATE {tabela} SET {dados} WHERE {where}"
 
-            if valor_dados == "":
-                self.cursor.execute(sql)
-            else:
-                self.cursor.execute(sql, valor_dados)
-            
-            if one:
-                result = self.cursor.fetchone()
-            else:
-                result = self.cursor.fetchall()
+            self.cursor.execute(sql, valor_dados)
 
-
+            self.connection.commit()
             self.cursor.close()
-            return result
+
+            print(f"| {tipo.upper()} COM SUCESSO! |")
+            print("---------------------------------")
+            print()
         
         except Error as e:
             print()

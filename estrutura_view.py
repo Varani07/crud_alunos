@@ -1,5 +1,5 @@
 import os
-from cadastro_view import Cadastro
+from cadastro_view import Cadastro, Pesquisar
 
 class Estrutura:
     def inicio():
@@ -66,16 +66,21 @@ class Estrutura:
             try:
                 num = int(input("Escolha uma opção: "))
                 os.system("cls")
-                if escolha == 2 and 0 < num < 5:
-                    pass
-
-                elif num == 1:
-                    if Cadastro.cadastro_curso() == "sair":
-                        return "sair"
+                if num == 1:
+                    if escolha == 1:
+                        if Cadastro.cadastro_curso(1, "") == "sair":
+                            return "sair"
+                    else:
+                        if Pesquisar.curso(1, "cursos cadastrados") == "sair":
+                            return "sair"
 
                 elif num == 2:
-                    if Cadastro.cadastro_turma() == "sair":
-                        return "sair"
+                    if escolha == 1:
+                        if Cadastro.cadastro_turma(1, "") == "sair":
+                            return "sair"
+                    else:
+                        if Pesquisar.curso(1, "cursos cadastrados") == "sair":
+                            return "sair"
 
                 elif num == 3:
                     pass
