@@ -228,19 +228,24 @@ class Cadastro:
 class Pesquisar:
     def curso(ver_detalhes, titulo: str):
         os.system("cls")
+
         answer = 1
-        id_curso = ""
+        id = ""
+
         tipo_interacao_plural = titulo.split(" ")[0]
+
         if tipo_interacao_plural == "professores":
             tipo_interacao = tipo_interacao_plural[:-2]
         else:
             tipo_interacao = tipo_interacao_plural[:-1]
+
         if tipo_interacao == "turma":
             max_num = 8
         elif tipo_interacao == "aluno":
             max_num = 9
         else: 
             max_num = 7
+
         while 0 < answer < max_num:
             EstruturaRepetivel.op_pesquisa(titulo)
             answer = input("Escolha uma opção: ")
@@ -248,14 +253,14 @@ class Pesquisar:
                 num = int(answer)
                 os.system("cls")
                 if 0 < num < max_num - 2:
-                    id_curso = TelaInfo.mostrar_info(num, ver_detalhes, tipo_interacao, tipo_interacao_plural)
-                    if id_curso == "sair":
+                    id = TelaInfo.mostrar_info(num, ver_detalhes, tipo_interacao, tipo_interacao_plural)
+                    if id == "sair":
                         return "sair"
-                    elif id_curso == None:
+                    elif id == None:
                         answer = 1
                         continue
                     else:
-                        return id_curso
+                        return id
                 elif num == max_num - 2:
                     break
                 elif num == max_num - 1:
@@ -338,13 +343,13 @@ class TelaInfo:
                     result = vis_inf.visualizar("id_curso, nome_curso, sigla", "cursos", "", "", False)
                     
                 elif tipo == "turma":
-                    result = vis_inf.visualizar("")
+                    result = vis_inf.visualizar("id_turma, nome_turma, id_curso, ano_inicio", "turmas", "", "", False)
 
                 elif tipo == "professor":
-                    pass
+                    result = vis_inf.visualizar("id_professor, nome_professor, cpf, data_birth", "professores", "", "", False)
 
                 elif tipo == "aluno":
-                    pass
+                    result = vis_inf.visualizar("id_aluno, nome_aluno, cpf, data_birth, id_curso, id_turma", "alunos", "", "", False)
 
             elif num == 2: #FILTRAR PELO ID
                 vis_inf = GetDAO()
@@ -353,13 +358,13 @@ class TelaInfo:
                     result = vis_inf.visualizar("id_curso, nome_curso, sigla", "cursos", f" WHERE id_curso LIKE '%{answer}%'", "", False)
                     
                 elif tipo == "turma":
-                    pass
+                    result = vis_inf.visualizar("id_turma, nome_turma, id_curso, ano_inicio", "turmas", f" WHERE id_turma LIKE '%{answer}%'", "", False)
 
                 elif tipo == "professor":
-                    pass
+                    result = vis_inf.visualizar("id_professor, nome_professor, cpf, data_birth", "professores", f" WHERE id_professor LIKE '%{answer}%'", "", False)
 
                 elif tipo == "aluno":
-                    pass
+                    result = vis_inf.visualizar("id_aluno, nome_aluno, cpf, data_birth, id_curso, id_turma", "alunos", f" WHERE id_aluno LIKE '%{answer}%'", "", False)
 
             elif num == 3: #FILTRAR PELO NOME
                 vis_inf = GetDAO()
@@ -368,13 +373,13 @@ class TelaInfo:
                     result = vis_inf.visualizar("id_curso, nome_curso, sigla", "cursos", f" WHERE nome_curso LIKE '%{answer}%'", "", False)
                     
                 elif tipo == "turma":
-                    pass
+                    result = vis_inf.visualizar("id_turma, nome_turma, id_curso, ano_inicio", "turmas", f" WHERE nome_turma LIKE '%{answer}%'", "", False)
 
                 elif tipo == "professor":
-                    pass
+                    result = vis_inf.visualizar("id_professor, nome_professor, cpf, data_birth", "professores", f" WHERE nome_professor LIKE '%{answer}%'", "", False)
 
                 elif tipo == "aluno":
-                    pass
+                    result = vis_inf.visualizar("id_aluno, nome_aluno, cpf, data_birth, id_curso, id_turma", "alunos", f" WHERE nome_aluno LIKE '%{answer}%'", "", False)
 
             elif num == 4:
                 vis_inf = GetDAO()
@@ -383,25 +388,56 @@ class TelaInfo:
                     result = vis_inf.visualizar("id_curso, nome_curso, sigla", "cursos", f" WHERE sigla LIKE '%{answer}%'", "", False)
                     
                 elif tipo == "turma": #FILTRAR POR CURSO
-                    pass
+                    os.system("cls")
+                    id_curso_para_filtrar_turma = Pesquisar.curso(0, "cursos cadastrados")
+                    if id_curso_para_filtrar_turma == "sair":
+                        return "sair"
+                    elif id_curso_para_filtrar_turma == None:
+                        id = ""
+                        answer = ""
+                        continue
+                    else:
+                        EstruturaRepetivel.search_header(tipo_plural)
+                        result = vis_inf.visualizar("id_turma, nome_turma, id_curso, ano_inicio", "turmas", f" WHERE id_curso LIKE '%{id_curso_para_filtrar_turma}%'", "", False)
 
                 elif tipo == "professor": #FILTRAR POR CPF
-                    pass
+                    result = vis_inf.visualizar("id_professor, nome_professor, cpf, data_birth", "professores", f" WHERE cpf LIKE '%{answer}%'", "", False)
 
                 elif tipo == "aluno": #FILTRAR POR CPF
-                    pass
+                    result = vis_inf.visualizar("id_aluno, nome_aluno, cpf, data_birth, id_curso, id_turma", "alunos", f" WHERE cpf LIKE '%{answer}%'", "", False)
 
             elif num == 5:
                 vis_inf = GetDAO()
 
                 if tipo == "turma": #FILTRAR POR ANO
-                    pass
+                    result = vis_inf.visualizar("id_turma, nome_turma, id_curso, ano_inicio", "turmas", f" WHERE ano_inicio LIKE '%{answer}%'", "", False)
 
                 elif tipo == "aluno": #FILTRAR POR CURSO
-                    pass
+                    os.system("cls")
+                    id_curso_para_filtrar_aluno = Pesquisar.curso(0, "cursos cadastrados")
+                    if id_curso_para_filtrar_aluno == "sair":
+                        return "sair"
+                    elif id_curso_para_filtrar_aluno == None:
+                        id = ""
+                        answer = ""
+                        continue
+                    else:
+                        EstruturaRepetivel.search_header(tipo_plural)
+                        result = vis_inf.visualizar("id_aluno, nome_aluno, cpf, data_birth, id_curso, id_turma", "alunos", f" WHERE id_curso LIKE '%{id_curso_para_filtrar_aluno}%'", "", False)
 
             elif num == 6: #FILTRAR POR TURMA
                 vis_inf = GetDAO()
+                os.system("cls")
+                id_turma_para_filtrar_aluno = Pesquisar.curso(0, "turmas cadastradas")
+                if id_turma_para_filtrar_aluno == "sair":
+                    return "sair"
+                elif id_turma_para_filtrar_aluno == None:
+                    id = ""
+                    answer = ""
+                    continue
+                else:
+                    EstruturaRepetivel.search_header(tipo_plural)
+                    result = vis_inf.visualizar("id_aluno, nome_aluno, cpf, data_birth, id_curso, id_turma", "alunos", f" WHERE id_turma LIKE '%{id_turma_para_filtrar_aluno}%'", "", False)
 
             # Iterando pelos itens presentes no resultado da pesquisa
             if tipo == "curso": 
@@ -410,13 +446,41 @@ class TelaInfo:
                     lista_id.append(item[0])
                 
             elif tipo == "turma":
-                pass
+                for item in result:
+                    get_nome_curso = GetDAO()
+                    nome_curso = get_nome_curso.visualizar("nome_curso", "cursos", " WHERE id_curso = %s", (item[2], ), True)
+                    for nome in nome_curso:
+                        EstruturaRepetivel.print_info_turma(item[0], item[1], nome, item[3])
+                        lista_id.append(item[0])
+                
+                if num == 4:
+                    answer = nome
 
-            elif tipo == "professor":
-                pass
+            elif tipo == "professor": # CALCULAR IDADE
+                for item in result:
+                    # ESTRUTURA
+                    lista_id.append(item[0])
 
-            elif tipo == "aluno":
-                pass
+            elif tipo == "aluno": # CALCULAR IDADE
+                for item in result:
+
+                    get_nome_curso = GetDAO()
+                    nome_curso = get_nome_curso.visualizar("nome_curso", "cursos", " WHERE id_curso = %s", (item[4], ), True)
+                    for nomeC in nome_curso:
+                        nome_c = nomeC
+                    
+                    get_nome_turma = GetDAO()
+                    nome_turma = get_nome_turma.visualizar("nome_turma", "turmas", " WHERE id_turma = %s", (item[5], ), True)
+                    for nomeT in nome_turma:
+                        nome_t = nomeT
+
+                    #ESTRUTURA
+                    lista_id.append(item[0])
+                
+                if num == 5:
+                    answer = nome_c
+                elif num == 6:
+                    answer = nome_t
 
             if len(lista_id) == 0:
                 input(f"Zero resultados pesquisando por {answer} em {tipo_plural.upper()}..... Pressione ENTER para continuar.")

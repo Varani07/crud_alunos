@@ -79,14 +79,22 @@ class Estrutura:
                         if Cadastro.cadastro_turma(1, "") == "sair":
                             return "sair"
                     else:
-                        if Pesquisar.curso(1, "cursos cadastrados") == "sair":
+                        if Pesquisar.curso(1, "turmas cadastradas") == "sair":
                             return "sair"
 
                 elif num == 3:
-                    pass
+                    if escolha == 1:
+                        pass
+                    else:
+                        if Pesquisar.curso(1, "professores cadastrados") == "sair":
+                            return "sair"
 
                 elif num == 4:
-                    pass
+                    if escolha == 1:
+                        pass
+                    else:
+                        if Pesquisar.curso(1, "alunos cadastrados") == "sair":
+                            return "sair"
 
                 elif num == 5:
                     break

@@ -25,19 +25,21 @@ class EstruturaRepetivel:
         print()
         print("- - - - - - - - - - - - - - - - - - - - -")
 
-    def print_info_professor(id: int, nome: str, cpf: str):
+    def print_info_professor(id: int, nome: str, cpf: str, data, idade):
         print()
         print(f" ID: {id}")
         print(f" Nome: {nome}")
         print(f" CPF: {cpf}")
+        print(f" Data de nascimento: {data}  |  Idade: {idade}")
         print()
         print("- - - - - - - - - - - - - - - - - - - - -")
 
-    def print_info_aluno(id: int, nome: str, cpf: str, curso: str, turma: str):
+    def print_info_aluno(id: int, nome: str, cpf: str, data, idade, curso: str, turma: str):
         print()
         print(f" ID: {id}")
         print(f" Nome: {nome}")
         print(f" CPF: {cpf}")
+        print(f" Data de nascimento: {data}  |  Idade: {idade}")
         print(f" Curso: {curso}")
         print(f" Turma: {turma}")
         print()
