@@ -1,3 +1,5 @@
+from get_dao import GetDAO
+
 class EstruturaRepetivel:
     def search_header(tipo_plural: str):
         print()
@@ -78,3 +80,24 @@ class EstruturaRepetivel:
                 print("[7] Voltar")
                 print("[8] Sair")
         print()
+
+    def ver_cursos_ou_turmas_prof(id_professor: int, curso_ou_turma: str):
+        tipo = curso_ou_turma[:-1]
+        if tipo == "curso":
+            adição = "um"
+        else:
+            adição = "uma"
+        print()
+        print(f"-------- ALTERAR {curso_ou_turma.upper()} --------")
+        print()
+        print()
+        print(f"Digite \"+\" para adicionar mais {adição} {tipo}.")
+        print(f"Digite \"-\" para tirar {adição} {tipo} da lista desse professor.")
+        print("Digite \"Voltar\" para voltar ao menu anterior.")
+        print("Digite \"Sair\" para sair do sistema.")
+        print()
+        get_info_dao = GetDAO()
+        if tipo == "curso":
+            pass
+        else:
+            pass
