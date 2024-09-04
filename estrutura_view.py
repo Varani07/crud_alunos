@@ -84,7 +84,8 @@ class Estrutura:
 
                 elif num == 3:
                     if escolha == 1:
-                        pass
+                        if Cadastro.cadastro_professor(1, "") == "sair":
+                            return "sair"
                     else:
                         if Pesquisar.curso(1, "professores cadastrados") == "sair":
                             return "sair"

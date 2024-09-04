@@ -16,7 +16,7 @@ class UpdateDAO:
             self.cursor.close()
 
             print(f"| {tipo.upper()} COM SUCESSO! |")
-            print("---------------------------------")
+            print("---------------------------------------------------------")
             print()
         
         except Error as e:

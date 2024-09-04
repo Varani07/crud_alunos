@@ -147,6 +147,10 @@ class Campos:
             except ValueError:
                 os.system("cls")
                 if len(answer) != 10:
+                    print("------------------------------------")
+                    print("| PREENCHA O CAMPO CONFORME MODELO |")
+                    print("------------------------------------")
+                    print()
                     answer = ""
                     continue 
                 i = 0
@@ -183,6 +187,7 @@ class Campos:
                     else:
                         return answer, difference_in_years
                 else:
+                    data_formato_certo = True
                     answer = ""
                     continue
             except Exception as e:
@@ -260,6 +265,7 @@ class Campos:
                 if cpf_formato_certo:
                     return answer
                 else:
+                    cpf_formato_certo = True
                     answer = ""
                     continue
             except Exception as e:
