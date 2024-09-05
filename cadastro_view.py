@@ -127,12 +127,21 @@ class Cadastro:
         if cadastrar:
             tela = "CADASTRAR"
             confirmar = "Cadastro"
+
             curso = ""
             ano_inicio = ""
             professor_responsavel = ""
+
+            num_confirmar = 4
+            num_voltar = 5
+            num_sair = 6
         else:
             tela = "ATUALIZAR"
             confirmar = "Alterações"
+
+            num_confirmar = 5
+            num_voltar = 6
+            num_sair = 7
 
             get_info = GetDAO()
             result = get_info.visualizar("id_curso, ano_inicio, id_professor", "turmas", " WHERE id_turma = %s", (id, ), False)
@@ -140,6 +149,9 @@ class Cadastro:
                 id_curso = item[0]
                 ano_inicio = item[1]
                 id_professor = item[2]
+                if id_professor == None:
+                    professor_responsavel = ""
+                    id_professor = ""
 
             get_curso_info = GetDAO()
             get_nome_curso = get_curso_info.visualizar("nome_curso, sigla", "cursos", " WHERE id_curso = %s", (id_curso, ), False)
@@ -147,13 +159,11 @@ class Cadastro:
                 curso = nome[0]
                 sigla = nome[1]
 
-            if id_professor != None:
+            if id_professor != "":
                 get_professor_info = GetDAO()
                 get_nome_professor = get_professor_info.visualizar("nome_professor", "professores", " WHERE id_professor = %s", (id_professor, ), True)
                 for nome_prof in get_nome_professor:
                     professor_responsavel = nome_prof
-            else:
-                professor_responsavel = ""
 
             curso_confirm = curso
             ano_inicio_confirm = ano_inicio
@@ -172,9 +182,12 @@ class Cadastro:
             print(f"[2] {ano_inicio_requisito}Ano de Início: {ano_inicio}")
             print(f"[3]  Professor Responsável: {professor_responsavel}")
             print()
-            print(f"[4] Confirmar {confirmar}")
-            print("[5] Voltar")
-            print("[6] Sair")
+            if not cadastrar:
+                print("[4] Ver alunos cadastrados na turma")
+                print()
+            print(f"[{num_confirmar}] Confirmar {confirmar}")
+            print(f"[{num_voltar}] Voltar")
+            print(f"[{num_sair}] Sair")
             print()
             if not cadastrar:
                 print("*Digite 'DELETAR' para excluir turma.")
@@ -214,13 +227,18 @@ class Cadastro:
                         return "return"
                     elif id_professor == None:
                         professor_responsavel = ""
+                        id_professor = ""
                     else:
                         get_professor_info = GetDAO()
                         get_nome_professor = get_professor_info.visualizar("nome_professor", "professores", " WHERE id_professor = %s", (id_professor, ), True)
                         for nome_prof in get_nome_professor:
                             professor_responsavel = nome_prof
 
-                elif num == 4:
+                elif num == 4 and not cadastrar:
+                    if EstruturaRepetivel.ver_cursos_ou_turmas_prof(id, "alunos") == "sair":
+                        return "sair"
+
+                elif num == num_confirmar:
                     if curso == "" or ano_inicio == "":
                         print("----------------------------------------------")
                         print("| PREENCHA TODOS OS CAMPOS SINALIZADOS COM * |")
@@ -262,10 +280,10 @@ class Cadastro:
                                 ano_inicio_confirm = ano_inicio
                                 professor_responsavel_confirm = professor_responsavel
 
-                elif num == 5:
+                elif num == num_voltar:
                     break
 
-                elif num == 6:
+                elif num == num_sair:
                     return "sair"
 
                 else:
@@ -430,8 +448,206 @@ class Cadastro:
                 continue
             except ValueError:
                 if not cadastrar and answer.upper() == "DELETAR":
-                    deletar_curso = DeleteDAO()
-                    deletar_curso.deletar("professores", "id_professor = %s", (id, ), "professor deletado")
+                    deletar_professor = DeleteDAO()
+                    deletar_professor.deletar("professores", "id_professor = %s", (id, ), "professor deletado")
+                    break
+                else:
+                    os.system("cls")
+                    print("--------------------")
+                    print("| DIGITE UM NUMERO |")
+                    print("--------------------")
+                    print()
+                    answer = 1
+                    continue
+            except Exception as e:
+                print()
+                print(f"*ERRO! {e}")
+                print()
+                print("- - - - - - - - - - - - - - - - - - - - - - ")
+                print()
+                answer = 1
+                continue
+
+    def cadastro_aluno(cadastrar, id):
+        if cadastrar:
+            tela = "CADASTRAR"
+            confirmar = "Cadastro"
+
+            nome_aluno = ""
+            data_nascimento = ""
+            idade = ""
+            cpf = ""
+            curso = ""
+            id_curso = ""
+            turma = ""
+            id_turma = ""
+        else:
+            tela = "ATUALIZAR"
+            confirmar = "Alterações"
+
+            get_info = GetDAO()
+            result = get_info.visualizar("nome_aluno, data_birth, cpf, id_curso, id_turma", "alunos", " WHERE id_aluno = %s", (id, ), False)
+            for item in result:
+                nome_aluno = item[0]
+                data_nascimento = item[1].strftime("%d/%m/%Y")
+                cpf = item[2]
+                hoje = datetime.now()
+                idade = int(relativedelta(hoje, item[1]).years)
+                id_curso = item[3]
+                id_turma = item[4]
+                if id_turma == None:
+                    id_turma = ""
+                    turma = ""
+
+                get_info_curso = GetDAO()
+                get_nome_curso = get_info_curso.visualizar("nome_curso", "cursos", " WHERE id_curso = %s", (id_curso, ), True)
+                for nome_curso in get_nome_curso:
+                    curso = nome_curso
+
+                if id_turma != "":
+                    get_info_turma = GetDAO()
+                    get_nome_turma = get_info_turma.visualizar("nome_turma", "turmas", " WHERE id_turma = %s", (id_turma, ), True)
+                    for nome_turma in get_nome_turma:
+                        turma = nome_turma
+
+            nome_aluno_confirm = nome_aluno
+            data_nascimento_confirm = data_nascimento
+            cpf_confirm = cpf
+            curso_confirm = curso
+            turma_confirm = turma
+
+        answer = 1
+
+        while 0 < answer < 9:
+            nome_aluno_requisito = "*" if nome_aluno == "" else " "
+            data_nascimento_requisito = "*" if data_nascimento == "" else " "
+            cpf_requisito = "*" if cpf == "" else " "
+            curso_requisito = "*" if curso == "" else " "
+            print()
+            print(f"-------- {tela} ALUNO --------")
+            print()
+            print()
+            print(f"[1] {nome_aluno_requisito}Nome: {nome_aluno}")
+            print(f"[2] {data_nascimento_requisito}Data de nascimento: {data_nascimento}  | Idade {idade}")
+            print(f"[3] {cpf_requisito}CPF: {cpf}")
+            print(f"[4] {curso_requisito}Curso: {curso}")
+            print(f"[5]  Turma: {turma}")
+            print()
+            print(f"[6] Confirmar {confirmar}")
+            print(f"[7] Voltar")
+            print(f"[8] Sair")
+            print()
+            if not cadastrar:
+                print("*Digite 'DELETAR' para excluir aluno.")
+            print()
+            answer = input("Escolha uma opção: ")
+            os.system("cls")
+            try: 
+                num = int(answer)
+                if num == 1:
+                    nome_aluno = Campos.texto(tela, 100, "nome")
+                    if nome_aluno == "sair":
+                        return "sair"
+
+                elif num == 2:
+                    data_nascimento, idade = Campos.data(tela, "data de nascimento", True)
+                    if data_nascimento == "sair":
+                        return "sair"
+                    
+                elif num == 3:
+                    cpf = Campos.cpf(tela)
+                    if cpf == "sair":
+                        return "sair"
+                    
+                elif num == 4:
+                    id_curso = Pesquisar.curso(0, "cursos cadastrados")
+                    if id_curso == "sair":
+                        return "sair"
+                    elif id_curso == None:
+                        curso = ""
+                        id_curso = ""
+                    else:
+                        get_curso_info = GetDAO()
+                        get_nome_curso = get_curso_info.visualizar("nome_curso", "cursos", " WHERE id_curso = %s", (id_curso, ), True)
+                        for nome in get_nome_curso:
+                            curso = nome
+
+                elif num == 5:
+                    if curso == "":
+                        print("-----------------------------")
+                        print("| PRIMEIRO ESCOLHA UM CURSO |")
+                        print("-----------------------------")
+                        print()
+                    else: # ALTERAR
+                        id_turma = EstruturaRepetivel.escolher("aluno", "nenhum", id_curso)
+                        if id_turma == "sair":
+                            return "return"
+                        elif id_turma == None:
+                            turma = ""
+                            id_turma = ""
+                        else:
+                            get_turma_info = GetDAO()
+                            get_turma_aluno = get_turma_info.visualizar("nome_turma", "turmas", " WHERE id_turma = %s", (id_turma, ), True)
+                            for nome_turma in get_turma_aluno:
+                                turma = nome_turma
+
+                elif num == 6:
+                    if nome_aluno == "" or data_nascimento == "" or cpf == "" or curso == "":
+                        print("----------------------------------------------")
+                        print("| PREENCHA TODOS OS CAMPOS SINALIZADOS COM * |")
+                        print("----------------------------------------------")
+                        print()
+                    else:
+                        data_formatada_sql = datetime.strptime(data_nascimento, "%d/%m/%Y")
+
+                        if turma == "":
+                            id_turma = None
+
+                        info = (nome_aluno, data_formatada_sql, cpf, id_curso, id_turma)
+
+                        if cadastrar:
+                            cadastrar_aluno = SetDAO()
+                            cadastrar_aluno.cadastrar("alunos", "nome_aluno, data_birth, cpf, id_curso, id_turma", "%s, %s, %s, %s, %s", info, "aluno cadastrado")
+                            nome_aluno = ""
+                            data_nascimento = ""
+                            cpf = ""
+                            id_turma = ""
+                            id_curso = ""
+                            curso = ""
+                            turma = ""
+                        else:
+                            if nome_aluno == nome_aluno_confirm and data_nascimento == data_nascimento_confirm and cpf == cpf_confirm and curso == curso_confirm and turma == turma_confirm:
+                                print("-----------------------------------------------")
+                                print("| ALTERE ALGUMA INFORMAÇÃO ANTES DE CONFIRMAR |")
+                                print("-----------------------------------------------")
+                                print()
+                            else:
+                                atualizar_aluno = UpdateDAO()
+                                atualizar_aluno.atualizar("alunos", "nome_aluno = %s, data_birth = %s, cpf = %s, id_curso = %s, id_turma = %s", f"id_aluno = {id}", "aluno alterado", info)
+                                nome_aluno_confirm = nome_aluno
+                                data_nascimento_confirm = data_nascimento
+                                cpf_confirm = cpf
+                                curso_confirm = curso
+                                turma_confirm = turma
+
+                elif num == 7:
+                    break
+
+                elif num == 8:
+                    return "sair"
+
+                else:
+                    print("---------------------------")
+                    print("| DIGITE UM NUMERO VÁLIDO |")
+                    print("---------------------------")
+                    print()
+
+                answer = 1
+                continue
+            except ValueError:
+                if not cadastrar and answer.upper() == "DELETAR":
+                    deletar_aluno = DeleteDAO()
+                    deletar_aluno.deletar("alunos", "id_aluno = %s", (id, ), "aluno deletado")
                     break
                 else:
                     os.system("cls")

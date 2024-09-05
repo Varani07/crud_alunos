@@ -92,7 +92,8 @@ class Estrutura:
 
                 elif num == 4:
                     if escolha == 1:
-                        pass
+                        if Cadastro.cadastro_aluno(1, "") == "sair":
+                            return "sair"
                     else:
                         if Pesquisar.curso(1, "alunos cadastrados") == "sair":
                             return "sair"

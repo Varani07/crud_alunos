@@ -91,12 +91,15 @@ class EstruturaRepetivel:
 
     def ver_cursos_ou_turmas_prof(id_professor: int, curso_ou_turma: str):
         tipo = curso_ou_turma[:-1]
-        if tipo == "curso":
-            adição = "um"
-            negacao = "nenhum"
-        else:
+        if tipo == "turma":
             adição = "uma"
             negacao = "nenhuma"
+        else:
+            adição = "um"
+            negacao = "nenhum"
+
+        alvo = "da turma" if tipo == "aluno" else "do professor"
+        alvo2 = "Esta turma" if tipo == "aluno" else "Este professor"
 
         lista_id = []
         
@@ -107,7 +110,7 @@ class EstruturaRepetivel:
             print(f"-------- ALTERAR {curso_ou_turma.upper()} --------")
             print()
             print()
-            print(f"Escolha {adição} {tipo} existente para excluir da lista do professor.")
+            print(f"Escolha {adição} {tipo} existente para excluir da lista {alvo}.")
             print(f"Digite \"+\" para adicionar mais {adição} {tipo}.")
             print("Digite \"Voltar\" para voltar ao menu anterior.")
             print("Digite \"Sair\" para sair do sistema.")
@@ -126,7 +129,7 @@ class EstruturaRepetivel:
                             lista_id.append(item[0])
                 else:
                     print(f"Este professor ainda não possui {negacao} {tipo}.")
-            else:
+            elif tipo == "turma":
                 result = get_info_dao.visualizar("id_turma", "turmas", " WHERE id_professor = %s", (id_professor, ), False)
                 if result != None:
                     for id_turma in result:
@@ -140,6 +143,32 @@ class EstruturaRepetivel:
                                 lista_id.append(item[0]) 
                 else:
                     print(f"Este professor ainda não possui {negacao} {tipo}.")
+            else:
+                result = get_info_dao.visualizar("id_aluno", "alunos", " WHERE id_turma = %s", (id_professor, ), False)
+                if result != None:
+                    for id_aluno in result:
+                        get_info_aluno = GetDAO()
+                        info = get_info_aluno.visualizar("id_aluno, nome_aluno, cpf, data_birth, id_curso, id_turma", "alunos", " WHERE id_aluno = %s", (id_aluno, ), False)
+                        
+                        for item in info:
+                            get_nome_curso = GetDAO()
+                            nome_curso = get_nome_curso.visualizar("nome_curso", "cursos", " WHERE id_curso = %s", (item[4], ), True)
+                            for nomeC in nome_curso:
+                                nome_c = nomeC
+                            
+                            get_nome_turma = GetDAO()
+                            nome_turma = get_nome_turma.visualizar("nome_turma", "turmas", " WHERE id_turma = %s", (item[5], ), True)
+                            for nomeT in nome_turma:
+                                nome_t = nomeT
+
+                            hoje = datetime.now()
+                            idade = int(relativedelta(hoje, item[3]).years)
+                            data_formatada = item[3].strftime("%d/%m/%Y")
+
+                            EstruturaRepetivel.print_info_aluno(item[0], item[1], item[2], data_formatada, idade, nome_c, nome_t)
+                            lista_id.append(item[0])
+                else:
+                    print(f"Esta turma ainda não possui nenhum aluno cadastrado.")
 
             print() 
             answer = input("Escolha uma opção: ")
@@ -147,7 +176,7 @@ class EstruturaRepetivel:
             try:
                 num = int(answer)
                 if len(lista_id) == 0:
-                    input(f"Este professor ainda não tem {negacao} {tipo} para selecionar.... Pressione ENTER para voltar.")
+                    input(f"{alvo2} ainda não tem {negacao} {tipo} para selecionar.... Pressione ENTER para voltar.")
                     answer = ""
                     os.system("cls")
                     continue
@@ -163,9 +192,12 @@ class EstruturaRepetivel:
                         if tipo == "curso":
                             deletar_dao = DeleteDAO()
                             deletar_dao.deletar("prof_curso", "id_curso = %s AND id_professor = %s", (id_professor, num), "curso deletado")
-                        else:
+                        elif tipo == "turma":
                             update_dao = UpdateDAO()
                             update_dao.atualizar("turmas", "id_professor = %s", "id_turma = %s", "turma alterada", (None, num))
+                        else:
+                            tirar_aluno_da_turma = UpdateDAO()
+                            tirar_aluno_da_turma.atualizar("alunos", "id_turma = %s", "id_aluno = %s", "aluno alterado", (None, num))
 
                         answer = ""
                         continue
@@ -217,7 +249,7 @@ class EstruturaRepetivel:
                     for nome in nome_curso:
                         EstruturaRepetivel.print_info_turma(item[0], item[1], nome, item[3])
                         list_id.append(item[0]) 
-            else:
+            elif entidade == "professor":
                 result = get_info_dao.visualizar("id_professor", "prof_curso", " WHERE id_curso = %s", (id_professor, ), True)
                 if result != None:
                     for id in result:
@@ -232,6 +264,44 @@ class EstruturaRepetivel:
                             list_id.append(item[0])
                 else:
                     input("Nenhum professor encontrado..... Pressione ENTER para voltar.")
+                    os.system("cls")
+                    break
+            elif entidade == "alunos": # ALTERAR
+                result = get_info_dao.visualizar("id_aluno, nome_aluno, cpf, data_birth, id_curso, id_turma", "alunos", " WHERE id_curso = %s AND id_turma = %s", (id_professor, None), False)
+                if result != None:
+                    for item in result:
+                        get_nome_curso = GetDAO()
+                        nome_curso = get_nome_curso.visualizar("nome_curso", "cursos", " WHERE id_curso = %s", (item[4], ), True)
+                        for nomeC in nome_curso:
+                            nome_c = nomeC
+                        
+                        get_nome_turma = GetDAO()
+                        nome_turma = get_nome_turma.visualizar("nome_turma", "turmas", " WHERE id_turma = %s", (item[5], ), True)
+                        for nomeT in nome_turma:
+                            nome_t = nomeT
+
+                        hoje = datetime.now()
+                        idade = int(relativedelta(hoje, item[3]).years)
+                        data_formatada = item[3].strftime("%d/%m/%Y")
+
+                        EstruturaRepetivel.print_info_aluno(item[0], item[1], item[2], data_formatada, idade, nome_c, nome_t)
+                        list_id.append(item[0])
+                else:
+                    input("Nenhum aluno encontrado..... Pressione ENTER para voltar.")
+                    os.system("cls")
+                    break
+
+            else:
+                result = get_info_dao.visualizar("id_turma, nome_turma, id_curso, ano_inicio", "turmas", " WHERE id_curso = %s", (id_professor, ), False)
+                if result != None:
+                    for item in result:
+                        get_nome_curso = GetDAO()
+                        nome_curso = get_nome_curso.visualizar("nome_curso", "cursos", " WHERE id_curso = %s", (item[2], ), True)
+                        for nome in nome_curso:
+                            EstruturaRepetivel.print_info_turma(item[0], item[1], nome, item[3])
+                            list_id.append(item[0])
+                else:
+                    input("Nenhuma turma encontrada..... Pressione ENTER para voltar.")
                     os.system("cls")
                     break
             
@@ -265,6 +335,9 @@ class EstruturaRepetivel:
                         elif entidade == "turmas":
                             update_dao = UpdateDAO()
                             update_dao.atualizar("turmas", "id_professor = %s", "id_turma = %s", "turma alterada", (id_professor, num))
+                        elif entidade == "alunos":
+                            update_turma_alunos = UpdateDAO()
+                            update_turma_alunos.atualizar("alunos", "id_turma = %s", "id_aluno = %s", "aluno alterado", (id_professor, num))
                         else:
                             return num
 
