@@ -222,7 +222,7 @@ class Cadastro:
                         print()
                         answer = 1
                         continue
-                    id_professor = EstruturaRepetivel.escolher("professor", "nenhum", id_curso)
+                    id_professor = EstruturaRepetivel.escolher("professor", "nenhum", id_curso, "")
                     if id_professor == "sair":
                         return "return"
                     elif id_professor == None:
@@ -419,6 +419,7 @@ class Cadastro:
                             nome_professor = ""
                             data_nascimento = ""
                             cpf = ""
+                            idade = ""
                         else:
                             if nome_professor == nome_professor_confirm and data_nascimento == data_nascimento_confirm and cpf == cpf_confirm:
                                 print("-----------------------------------------------")
@@ -550,7 +551,7 @@ class Cadastro:
                         return "sair"
 
                 elif num == 2:
-                    data_nascimento, idade = Campos.data(tela, "data de nascimento", True)
+                    data_nascimento, idade = Campos.data(tela, "data de nascimento", False)
                     if data_nascimento == "sair":
                         return "sair"
                     
@@ -579,7 +580,7 @@ class Cadastro:
                         print("-----------------------------")
                         print()
                     else: # ALTERAR
-                        id_turma = EstruturaRepetivel.escolher("aluno", "nenhum", id_curso)
+                        id_turma = EstruturaRepetivel.escolher("aluno", "nenhum", id_curso, "")
                         if id_turma == "sair":
                             return "return"
                         elif id_turma == None:
@@ -615,6 +616,7 @@ class Cadastro:
                             id_curso = ""
                             curso = ""
                             turma = ""
+                            idade = ""
                         else:
                             if nome_aluno == nome_aluno_confirm and data_nascimento == data_nascimento_confirm and cpf == cpf_confirm and curso == curso_confirm and turma == turma_confirm:
                                 print("-----------------------------------------------")
@@ -736,7 +738,10 @@ class TelaInfo:
         while id == "":
             EstruturaRepetivel.search_header(tipo_plural)
 
-            if  1 != num:
+            if num == 4 and tipo == "turma" or num == 5 and tipo == "aluno" or num == 6 and tipo == "aluno":
+                passa_direto = True
+
+            if  1 != num and not passa_direto:
                 answer = ""
                 while answer == "":
                     answer = input("Pesquisar: ")
