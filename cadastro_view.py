@@ -298,6 +298,8 @@ class Cadastro:
                 if not cadastrar and answer.upper() == "DELETAR":
                     deletar_curso = DeleteDAO()
                     deletar_curso.deletar("turmas", "id_turma = %s", (id, ), "turma deletada")
+                    alterar_alunos_do_curso = UpdateDAO()
+                    alterar_alunos_do_curso.atualizar("alunos", "id_turma = %s", "id_turma = %s", "alunos vinculados a turma alterados", (None, id))
                     break
                 else:
                     os.system("cls")
@@ -449,6 +451,10 @@ class Cadastro:
                 continue
             except ValueError:
                 if not cadastrar and answer.upper() == "DELETAR":
+                    deletar_cursos_vinculados = DeleteDAO()
+                    deletar_cursos_vinculados.deletar("prof_curso", "id_professor = %s", (id, ), "cursos desvinculados do professor")
+                    alterar_turmas = UpdateDAO()
+                    alterar_turmas.atualizar("turmas", "id_professor = %s", "id_professor = %s", "turmas alteradas", (None, id))
                     deletar_professor = DeleteDAO()
                     deletar_professor.deletar("professores", "id_professor = %s", (id, ), "professor deletado")
                     break
@@ -572,6 +578,8 @@ class Cadastro:
                         get_nome_curso = get_curso_info.visualizar("nome_curso", "cursos", " WHERE id_curso = %s", (id_curso, ), True)
                         for nome in get_nome_curso:
                             curso = nome
+                        turma = ""
+                        id_turma = ""
 
                 elif num == 5:
                     if curso == "":
@@ -740,6 +748,8 @@ class TelaInfo:
 
             if num == 4 and tipo == "turma" or num == 5 and tipo == "aluno" or num == 6 and tipo == "aluno":
                 passa_direto = True
+            else:
+                passa_direto = False
 
             if  1 != num and not passa_direto:
                 answer = ""
@@ -839,9 +849,7 @@ class TelaInfo:
                     if id_curso_para_filtrar_turma == "sair":
                         return "sair"
                     elif id_curso_para_filtrar_turma == None:
-                        id = ""
-                        answer = ""
-                        continue
+                        return None
                     else:
                         EstruturaRepetivel.search_header(tipo_plural)
                         result = vis_inf.visualizar("id_turma, nome_turma, id_curso, ano_inicio", "turmas", f" WHERE id_curso LIKE '%{id_curso_para_filtrar_turma}%'", "", False)
@@ -864,9 +872,7 @@ class TelaInfo:
                     if id_curso_para_filtrar_aluno == "sair":
                         return "sair"
                     elif id_curso_para_filtrar_aluno == None:
-                        id = ""
-                        answer = ""
-                        continue
+                        return None
                     else:
                         EstruturaRepetivel.search_header(tipo_plural)
                         result = vis_inf.visualizar("id_aluno, nome_aluno, cpf, data_birth, id_curso, id_turma", "alunos", f" WHERE id_curso LIKE '%{id_curso_para_filtrar_aluno}%'", "", False)
@@ -878,9 +884,7 @@ class TelaInfo:
                 if id_turma_para_filtrar_aluno == "sair":
                     return "sair"
                 elif id_turma_para_filtrar_aluno == None:
-                    id = ""
-                    answer = ""
-                    continue
+                    return None
                 else:
                     EstruturaRepetivel.search_header(tipo_plural)
                     result = vis_inf.visualizar("id_aluno, nome_aluno, cpf, data_birth, id_curso, id_turma", "alunos", f" WHERE id_turma LIKE '%{id_turma_para_filtrar_aluno}%'", "", False)
@@ -894,9 +898,13 @@ class TelaInfo:
             elif tipo == "turma":
                 for item in result:
                     get_nome_curso = GetDAO()
-                    nome_curso = get_nome_curso.visualizar("nome_curso", "cursos", " WHERE id_curso = %s", (item[2], ), True)
-                    for nome in nome_curso:
-                        EstruturaRepetivel.print_info_turma(item[0], item[1], nome, item[3])
+                    if item[2] != None:
+                        nome_curso = get_nome_curso.visualizar("nome_curso", "cursos", " WHERE id_curso = %s", (item[2], ), True)
+                        for nome in nome_curso:
+                            EstruturaRepetivel.print_info_turma(item[0], item[1], nome, item[3])
+                            lista_id.append(item[0])
+                    else:
+                        EstruturaRepetivel.print_info_turma(item[0], item[1], "", item[3])
                         lista_id.append(item[0])
                 
                 if num == 4:
@@ -919,10 +927,13 @@ class TelaInfo:
                     for nomeC in nome_curso:
                         nome_c = nomeC
                     
-                    get_nome_turma = GetDAO()
-                    nome_turma = get_nome_turma.visualizar("nome_turma", "turmas", " WHERE id_turma = %s", (item[5], ), True)
-                    for nomeT in nome_turma:
-                        nome_t = nomeT
+                    if item[5] != None:
+                        get_nome_turma = GetDAO()
+                        nome_turma = get_nome_turma.visualizar("nome_turma", "turmas", " WHERE id_turma = %s", (item[5], ), True)
+                        for nomeT in nome_turma:
+                            nome_t = nomeT
+                    else: 
+                        nome_t = ""
 
                     hoje = datetime.now()
                     idade = int(relativedelta(hoje, item[3]).years)
@@ -972,7 +983,8 @@ class TelaInfo:
                                     return "sair"
 
                             elif tipo == "aluno":
-                                pass
+                                if Cadastro.cadastro_aluno(0, id) == "sair":
+                                    return "sair"
         
                     else:
                         print("---------------------------")
