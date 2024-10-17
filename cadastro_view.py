@@ -1,13 +1,9 @@
 import os
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
+from dateutil.relativedelta import relativedelta # type: ignore
 
 from campos import Campos
-
-from set_dao import SetDAO
-from get_dao import GetDAO
-from update_dao import UpdateDAO
-from delete_dao import DeleteDAO
+from dao import DAO
 
 from util import EstruturaRepetivel
 
@@ -21,7 +17,7 @@ class Cadastro:
         else:
             tela = "ATUALIZAR"
             confirmar = "Alterações"
-            get_info = GetDAO()
+            get_info = DAO()
             result = get_info.visualizar("nome_curso, sigla", "cursos", " WHERE id_curso = %s", (id, ), False)
             for item in result:
                 nome = item[0]
@@ -70,7 +66,7 @@ class Cadastro:
                     else:
                         if cadastrar:
                             info_curso = (nome, sigla)
-                            cadastrar_curso = SetDAO()
+                            cadastrar_curso = DAO()
                             cadastrar_curso.cadastrar("cursos", "nome_curso, sigla", "%s, %s", info_curso, "curso cadastrado")
                             nome = ""
                             sigla = ""
@@ -81,7 +77,7 @@ class Cadastro:
                                 print("-----------------------------------------------")
                                 print()
                             else:
-                                atualizar_curso = UpdateDAO()
+                                atualizar_curso = DAO()
                                 info = (nome, sigla)
                                 atualizar_curso.atualizar("cursos", "nome_curso = %s, sigla = %s", f"id_curso = {id}", "curso alterado", info)
                                 nome_confirm = nome
@@ -103,7 +99,7 @@ class Cadastro:
                 continue
             except ValueError:
                 if not cadastrar and answer.upper() == "DELETAR":
-                    deletar_curso = DeleteDAO()
+                    deletar_curso = DAO()
                     deletar_curso.deletar("cursos", "id_curso = %s", (id, ), "curso deletado")
                     break
                 else:
@@ -143,7 +139,7 @@ class Cadastro:
             num_voltar = 6
             num_sair = 7
 
-            get_info = GetDAO()
+            get_info = DAO()
             result = get_info.visualizar("id_curso, ano_inicio, id_professor", "turmas", " WHERE id_turma = %s", (id, ), False)
             for item in result:
                 id_curso = item[0]
@@ -153,14 +149,14 @@ class Cadastro:
                     professor_responsavel = ""
                     id_professor = ""
 
-            get_curso_info = GetDAO()
+            get_curso_info = DAO()
             get_nome_curso = get_curso_info.visualizar("nome_curso, sigla", "cursos", " WHERE id_curso = %s", (id_curso, ), False)
             for nome in get_nome_curso:
                 curso = nome[0]
                 sigla = nome[1]
 
             if id_professor != "":
-                get_professor_info = GetDAO()
+                get_professor_info = DAO()
                 get_nome_professor = get_professor_info.visualizar("nome_professor", "professores", " WHERE id_professor = %s", (id_professor, ), True)
                 for nome_prof in get_nome_professor:
                     professor_responsavel = nome_prof
@@ -203,7 +199,7 @@ class Cadastro:
                     elif id_curso == None:
                         curso = ""
                     else:
-                        get_curso_info = GetDAO()
+                        get_curso_info = DAO()
                         get_nome_curso = get_curso_info.visualizar("nome_curso, sigla", "cursos", " WHERE id_curso = %s", (id_curso, ), False)
                         for nome in get_nome_curso:
                             curso = nome[0]
@@ -229,7 +225,7 @@ class Cadastro:
                         professor_responsavel = ""
                         id_professor = ""
                     else:
-                        get_professor_info = GetDAO()
+                        get_professor_info = DAO()
                         get_nome_professor = get_professor_info.visualizar("nome_professor", "professores", " WHERE id_professor = %s", (id_professor, ), True)
                         for nome_prof in get_nome_professor:
                             professor_responsavel = nome_prof
@@ -249,7 +245,7 @@ class Cadastro:
                             id_professor = None
                         if cadastrar:
                             info_turma = (id_curso, ano_inicio, id_professor, sigla + str(ano_inicio))
-                            cadastrar_turma = SetDAO()
+                            cadastrar_turma = DAO()
                             try:
                                 cadastrar_turma.cadastrar("turmas", "id_curso, ano_inicio, id_professor, nome_turma", "%s, %s, %s, %s", info_turma, "turma cadastrada")
                             except:
@@ -267,7 +263,7 @@ class Cadastro:
                                 print("-----------------------------------------------")
                                 print()
                             else:
-                                atualizar_curso = UpdateDAO()
+                                atualizar_curso = DAO()
                                 info = (id_curso, ano_inicio, id_professor, sigla + str(ano_inicio))
                                 try:
                                     atualizar_curso.atualizar("turmas", "id_curso = %s, ano_inicio = %s, id_professor = %s, nome_turma = %s", f"id_turma = {id}", "turma alterada", info)
@@ -296,9 +292,9 @@ class Cadastro:
                 continue
             except ValueError:
                 if not cadastrar and answer.upper() == "DELETAR":
-                    deletar_curso = DeleteDAO()
+                    deletar_curso = DAO()
                     deletar_curso.deletar("turmas", "id_turma = %s", (id, ), "turma deletada")
-                    alterar_alunos_do_curso = UpdateDAO()
+                    alterar_alunos_do_curso = DAO()
                     alterar_alunos_do_curso.atualizar("alunos", "id_turma = %s", "id_turma = %s", "alunos vinculados a turma alterados", (None, id))
                     break
                 else:
@@ -337,7 +333,7 @@ class Cadastro:
             confirmar = "Alterações"
             alterar = True
 
-            get_info = GetDAO()
+            get_info = DAO()
             result = get_info.visualizar("nome_professor, data_birth, cpf", "professores", " WHERE id_professor = %s", (id, ), False)
             for item in result:
                 nome_professor = item[0]
@@ -416,7 +412,7 @@ class Cadastro:
                         data_formatada_sql = datetime.strptime(data_nascimento, "%d/%m/%Y")
                         info = (nome_professor, data_formatada_sql, cpf)
                         if cadastrar:
-                            cadastrar_professor = SetDAO()
+                            cadastrar_professor = DAO()
                             cadastrar_professor.cadastrar("professores", "nome_professor, data_birth, cpf", "%s, %s, %s", info, "professor cadastrado")
                             nome_professor = ""
                             data_nascimento = ""
@@ -429,7 +425,7 @@ class Cadastro:
                                 print("-----------------------------------------------")
                                 print()
                             else:
-                                atualizar_professor = UpdateDAO()
+                                atualizar_professor = DAO()
                                 atualizar_professor.atualizar("professores", "nome_professor = %s, data_birth = %s, cpf = %s", f"id_professor = {id}", "professor alterado", info)
                                 nome_professor_confirm = nome_professor
                                 data_nascimento_confirm = data_nascimento
@@ -451,11 +447,11 @@ class Cadastro:
                 continue
             except ValueError:
                 if not cadastrar and answer.upper() == "DELETAR":
-                    deletar_cursos_vinculados = DeleteDAO()
+                    deletar_cursos_vinculados = DAO()
                     deletar_cursos_vinculados.deletar("prof_curso", "id_professor = %s", (id, ), "cursos desvinculados do professor")
-                    alterar_turmas = UpdateDAO()
+                    alterar_turmas = DAO()
                     alterar_turmas.atualizar("turmas", "id_professor = %s", "id_professor = %s", "turmas alteradas", (None, id))
-                    deletar_professor = DeleteDAO()
+                    deletar_professor = DAO()
                     deletar_professor.deletar("professores", "id_professor = %s", (id, ), "professor deletado")
                     break
                 else:
@@ -492,7 +488,7 @@ class Cadastro:
             tela = "ATUALIZAR"
             confirmar = "Alterações"
 
-            get_info = GetDAO()
+            get_info = DAO()
             result = get_info.visualizar("nome_aluno, data_birth, cpf, id_curso, id_turma", "alunos", " WHERE id_aluno = %s", (id, ), False)
             for item in result:
                 nome_aluno = item[0]
@@ -506,13 +502,13 @@ class Cadastro:
                     id_turma = ""
                     turma = ""
 
-                get_info_curso = GetDAO()
+                get_info_curso = DAO()
                 get_nome_curso = get_info_curso.visualizar("nome_curso", "cursos", " WHERE id_curso = %s", (id_curso, ), True)
                 for nome_curso in get_nome_curso:
                     curso = nome_curso
 
                 if id_turma != "":
-                    get_info_turma = GetDAO()
+                    get_info_turma = DAO()
                     get_nome_turma = get_info_turma.visualizar("nome_turma", "turmas", " WHERE id_turma = %s", (id_turma, ), True)
                     for nome_turma in get_nome_turma:
                         turma = nome_turma
@@ -574,7 +570,7 @@ class Cadastro:
                         curso = ""
                         id_curso = ""
                     else:
-                        get_curso_info = GetDAO()
+                        get_curso_info = DAO()
                         get_nome_curso = get_curso_info.visualizar("nome_curso", "cursos", " WHERE id_curso = %s", (id_curso, ), True)
                         for nome in get_nome_curso:
                             curso = nome
@@ -595,7 +591,7 @@ class Cadastro:
                             turma = ""
                             id_turma = ""
                         else:
-                            get_turma_info = GetDAO()
+                            get_turma_info = DAO()
                             get_turma_aluno = get_turma_info.visualizar("nome_turma", "turmas", " WHERE id_turma = %s", (id_turma, ), True)
                             for nome_turma in get_turma_aluno:
                                 turma = nome_turma
@@ -615,7 +611,7 @@ class Cadastro:
                         info = (nome_aluno, data_formatada_sql, cpf, id_curso, id_turma)
 
                         if cadastrar:
-                            cadastrar_aluno = SetDAO()
+                            cadastrar_aluno = DAO()
                             cadastrar_aluno.cadastrar("alunos", "nome_aluno, data_birth, cpf, id_curso, id_turma", "%s, %s, %s, %s, %s", info, "aluno cadastrado")
                             nome_aluno = ""
                             data_nascimento = ""
@@ -632,7 +628,7 @@ class Cadastro:
                                 print("-----------------------------------------------")
                                 print()
                             else:
-                                atualizar_aluno = UpdateDAO()
+                                atualizar_aluno = DAO()
                                 atualizar_aluno.atualizar("alunos", "nome_aluno = %s, data_birth = %s, cpf = %s, id_curso = %s, id_turma = %s", f"id_aluno = {id}", "aluno alterado", info)
                                 nome_aluno_confirm = nome_aluno
                                 data_nascimento_confirm = data_nascimento
@@ -656,7 +652,7 @@ class Cadastro:
                 continue
             except ValueError:
                 if not cadastrar and answer.upper() == "DELETAR":
-                    deletar_aluno = DeleteDAO()
+                    deletar_aluno = DAO()
                     deletar_aluno.deletar("alunos", "id_aluno = %s", (id, ), "aluno deletado")
                     break
                 else:
@@ -793,7 +789,7 @@ class TelaInfo:
             
             lista_id = []
             if num == 1: #PESQUISAR SEM WHERE DEFINIDO
-                vis_inf = GetDAO()
+                vis_inf = DAO()
 
                 if tipo == "curso":
                     result = vis_inf.visualizar("id_curso, nome_curso, sigla", "cursos", "", "", False)
@@ -808,7 +804,7 @@ class TelaInfo:
                     result = vis_inf.visualizar("id_aluno, nome_aluno, cpf, data_birth, id_curso, id_turma", "alunos", "", "", False)
 
             elif num == 2: #FILTRAR PELO ID
-                vis_inf = GetDAO()
+                vis_inf = DAO()
 
                 if tipo == "curso":
                     result = vis_inf.visualizar("id_curso, nome_curso, sigla", "cursos", f" WHERE id_curso LIKE '%{answer}%'", "", False)
@@ -823,7 +819,7 @@ class TelaInfo:
                     result = vis_inf.visualizar("id_aluno, nome_aluno, cpf, data_birth, id_curso, id_turma", "alunos", f" WHERE id_aluno LIKE '%{answer}%'", "", False)
 
             elif num == 3: #FILTRAR PELO NOME
-                vis_inf = GetDAO()
+                vis_inf = DAO()
 
                 if tipo == "curso":
                     result = vis_inf.visualizar("id_curso, nome_curso, sigla", "cursos", f" WHERE nome_curso LIKE '%{answer}%'", "", False)
@@ -838,7 +834,7 @@ class TelaInfo:
                     result = vis_inf.visualizar("id_aluno, nome_aluno, cpf, data_birth, id_curso, id_turma", "alunos", f" WHERE nome_aluno LIKE '%{answer}%'", "", False)
 
             elif num == 4:
-                vis_inf = GetDAO()
+                vis_inf = DAO()
 
                 if tipo == "curso": #FILTRAR POR SIGLA
                     result = vis_inf.visualizar("id_curso, nome_curso, sigla", "cursos", f" WHERE sigla LIKE '%{answer}%'", "", False)
@@ -861,7 +857,7 @@ class TelaInfo:
                     result = vis_inf.visualizar("id_aluno, nome_aluno, cpf, data_birth, id_curso, id_turma", "alunos", f" WHERE cpf LIKE '%{answer}%'", "", False)
 
             elif num == 5:
-                vis_inf = GetDAO()
+                vis_inf = DAO()
 
                 if tipo == "turma": #FILTRAR POR ANO
                     result = vis_inf.visualizar("id_turma, nome_turma, id_curso, ano_inicio", "turmas", f" WHERE ano_inicio LIKE '%{answer}%'", "", False)
@@ -878,7 +874,7 @@ class TelaInfo:
                         result = vis_inf.visualizar("id_aluno, nome_aluno, cpf, data_birth, id_curso, id_turma", "alunos", f" WHERE id_curso LIKE '%{id_curso_para_filtrar_aluno}%'", "", False)
 
             elif num == 6: #FILTRAR POR TURMA
-                vis_inf = GetDAO()
+                vis_inf = DAO()
                 os.system("cls")
                 id_turma_para_filtrar_aluno = Pesquisar.curso(0, "turmas cadastradas")
                 if id_turma_para_filtrar_aluno == "sair":
@@ -897,7 +893,7 @@ class TelaInfo:
                 
             elif tipo == "turma":
                 for item in result:
-                    get_nome_curso = GetDAO()
+                    get_nome_curso = DAO()
                     if item[2] != None:
                         nome_curso = get_nome_curso.visualizar("nome_curso", "cursos", " WHERE id_curso = %s", (item[2], ), True)
                         for nome in nome_curso:
@@ -922,13 +918,13 @@ class TelaInfo:
             elif tipo == "aluno": # CALCULAR IDADE
                 for item in result:
 
-                    get_nome_curso = GetDAO()
+                    get_nome_curso = DAO()
                     nome_curso = get_nome_curso.visualizar("nome_curso", "cursos", " WHERE id_curso = %s", (item[4], ), True)
                     for nomeC in nome_curso:
                         nome_c = nomeC
                     
                     if item[5] != None:
-                        get_nome_turma = GetDAO()
+                        get_nome_turma = DAO()
                         nome_turma = get_nome_turma.visualizar("nome_turma", "turmas", " WHERE id_turma = %s", (item[5], ), True)
                         for nomeT in nome_turma:
                             nome_t = nomeT

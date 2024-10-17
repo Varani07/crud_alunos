@@ -1,10 +1,7 @@
-from set_dao import SetDAO
-from get_dao import GetDAO
-from delete_dao import DeleteDAO
-from update_dao import UpdateDAO
+from dao import DAO
 
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
+from dateutil.relativedelta import relativedelta # type: ignore
 
 import os
 
@@ -116,13 +113,13 @@ class EstruturaRepetivel:
             print("Digite \"Sair\" para sair do sistema.")
             print()
 
-            get_info_dao = GetDAO()
+            get_info_dao = DAO()
 
             if tipo == "curso":
                 result = get_info_dao.visualizar("id_curso", "prof_curso", " WHERE id_professor = %s", (id_professor, ), True)
                 if result != None:
                     for id_cursos in result:
-                        get_info_cursos = GetDAO()
+                        get_info_cursos = DAO()
                         info = get_info_cursos.visualizar("id_curso, nome_curso, sigla", "cursos", " WHERE id_curso = %s", (id_cursos, ), False)
                         for item in info:
                             EstruturaRepetivel.print_info_curso(item[0], item[1], item[2])
@@ -133,10 +130,10 @@ class EstruturaRepetivel:
                 result = get_info_dao.visualizar("id_turma", "turmas", " WHERE id_professor = %s", (id_professor, ), False)
                 if result != None:
                     for id_turma in result:
-                        get_info_turmas = GetDAO()
+                        get_info_turmas = DAO()
                         info = get_info_turmas.visualizar("id_turma, nome_turma, id_curso, ano_inicio", "turmas", " WHERE id_turma = %s", (id_turma[0], ), False)
                         for item in info:
-                            get_nome_curso = GetDAO()
+                            get_nome_curso = DAO()
                             nome_curso = get_nome_curso.visualizar("nome_curso", "cursos", " WHERE id_curso = %s", (item[2], ), True)
                             for nome in nome_curso:
                                 EstruturaRepetivel.print_info_turma(item[0], item[1], nome, item[3])
@@ -147,17 +144,17 @@ class EstruturaRepetivel:
                 result = get_info_dao.visualizar("id_aluno", "alunos", " WHERE id_turma = %s", (id_professor, ), False)
                 if result != None and result != []:
                     for id_aluno in result:
-                        get_info_aluno = GetDAO()
+                        get_info_aluno = DAO()
                         info = get_info_aluno.visualizar("id_aluno, nome_aluno, cpf, data_birth, id_curso, id_turma", "alunos", " WHERE id_aluno = %s", (id_aluno[0], ), False) #AQUI
                         
                         for item in info:
-                            get_nome_curso = GetDAO()
+                            get_nome_curso = DAO()
                             nome_curso = get_nome_curso.visualizar("nome_curso", "cursos", " WHERE id_curso = %s", (item[4], ), True)
                             for nomeC in nome_curso:
                                 nome_c = nomeC
                             
                             if item[5] != None:
-                                get_nome_turma = GetDAO()
+                                get_nome_turma = DAO()
                                 nome_turma = get_nome_turma.visualizar("nome_turma", "turmas", " WHERE id_turma = %s", (item[5], ), True)
                                 for nomeT in nome_turma:
                                     nome_t = nomeT
@@ -193,13 +190,13 @@ class EstruturaRepetivel:
                         continue
                     else:
                         if tipo == "curso":
-                            deletar_dao = DeleteDAO()
+                            deletar_dao = DAO()
                             deletar_dao.deletar("prof_curso", "id_curso = %s AND id_professor = %s", (id_professor, num), "curso deletado")
                         elif tipo == "turma":
-                            update_dao = UpdateDAO()
+                            update_dao = DAO()
                             update_dao.atualizar("turmas", "id_professor = %s", "id_turma = %s", "turma alterada", (None, num))
                         else:
-                            tirar_aluno_da_turma = UpdateDAO()
+                            tirar_aluno_da_turma = DAO()
                             tirar_aluno_da_turma.atualizar("alunos", "id_turma = %s", "id_aluno = %s", "aluno alterado", (None, num))
 
                         answer = ""
@@ -215,7 +212,7 @@ class EstruturaRepetivel:
                         if EstruturaRepetivel.escolher(curso_ou_turma, negacao, id_professor, "") == "sair":
                             return "sair"
                     else:
-                        get_id_curso = GetDAO()
+                        get_id_curso = DAO()
                         get_id_curso_item = get_id_curso.visualizar("id_curso", "turmas", " WHERE id_turma = %s", (id_professor, ), True)
                         for item_id in get_id_curso_item:
                             if EstruturaRepetivel.escolher(curso_ou_turma, negacao, id_professor, item_id) == "sair":
@@ -244,7 +241,7 @@ class EstruturaRepetivel:
         while answer == "":
             EstruturaRepetivel.search_header(entidade)
 
-            get_info_dao = GetDAO()
+            get_info_dao = DAO()
 
             if entidade == "cursos":
                 info = get_info_dao.visualizar("id_curso, nome_curso, sigla", "cursos", "", "", False)
@@ -254,7 +251,7 @@ class EstruturaRepetivel:
             elif entidade == "turmas":
                 info = get_info_dao.visualizar("id_turma, nome_turma, id_curso, ano_inicio", "turmas", " WHERE id_professor = %s", (None, ), False)
                 for item in info:
-                    get_nome_curso = GetDAO()
+                    get_nome_curso = DAO()
                     nome_curso = get_nome_curso.visualizar("nome_curso", "cursos", " WHERE id_curso = %s", (item[2], ), True)
                     for nome in nome_curso:
                         EstruturaRepetivel.print_info_turma(item[0], item[1], nome, item[3])
@@ -263,7 +260,7 @@ class EstruturaRepetivel:
                 result = get_info_dao.visualizar("id_professor", "prof_curso", " WHERE id_curso = %s", (id_professor, ), True)
                 if result != None:
                     for id in result:
-                        get_id_dao = GetDAO()
+                        get_id_dao = DAO()
                         info = get_id_dao.visualizar("id_professor, nome_professor, cpf, data_birth", "professores", " WHERE id_professor = %s", (id, ), False)
                         for item in info:
                             hoje = datetime.now()
@@ -280,12 +277,12 @@ class EstruturaRepetivel:
                 result = get_info_dao.visualizar("id_aluno, nome_aluno, cpf, data_birth, id_curso, id_turma", "alunos", " WHERE id_curso = %s", (id_alternativo, ), False) # AQUI
                 if result != None and result != []:
                     for item in result:
-                        get_nome_curso = GetDAO()
+                        get_nome_curso = DAO()
                         nome_curso = get_nome_curso.visualizar("nome_curso", "cursos", " WHERE id_curso = %s", (item[4], ), True)
                         for nomeC in nome_curso:
                             nome_c = nomeC
                         if item[5] != None:
-                            get_nome_turma = GetDAO()
+                            get_nome_turma = DAO()
                             nome_turma = get_nome_turma.visualizar("nome_turma", "turmas", " WHERE id_turma = %s", (item[5], ), True)
                             for nomeT in nome_turma:
                                 nome_t = nomeT
@@ -308,7 +305,7 @@ class EstruturaRepetivel:
                 result = get_info_dao.visualizar("id_turma, nome_turma, id_curso, ano_inicio", "turmas", " WHERE id_curso = %s", (id_professor, ), False)
                 if result != None:
                     for item in result:
-                        get_nome_curso = GetDAO()
+                        get_nome_curso = DAO()
                         nome_curso = get_nome_curso.visualizar("nome_curso", "cursos", " WHERE id_curso = %s", (item[2], ), True)
                         for nome in nome_curso:
                             EstruturaRepetivel.print_info_turma(item[0], item[1], nome, item[3])
@@ -335,7 +332,7 @@ class EstruturaRepetivel:
                         continue
                     else:
                         if entidade == "cursos":
-                            cadastrar_dao = SetDAO()
+                            cadastrar_dao = DAO()
                             try:
                                 cadastrar_dao.cadastrar("prof_curso", "id_curso, id_professor", "%s, %s", (num, id_professor, ), "curso vinculado ao professor")
                             except:
@@ -346,10 +343,10 @@ class EstruturaRepetivel:
                                 answer = ""
                                 continue
                         elif entidade == "turmas":
-                            update_dao = UpdateDAO()
+                            update_dao = DAO()
                             update_dao.atualizar("turmas", "id_professor = %s", "id_turma = %s", "turma alterada", (id_professor, num))
                         elif entidade == "alunos":
-                            update_turma_alunos = UpdateDAO()
+                            update_turma_alunos = DAO()
                             update_turma_alunos.atualizar("alunos", "id_turma = %s", "id_aluno = %s", "aluno alterado", (id_professor, num))
                         else:
                             return num

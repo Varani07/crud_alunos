@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
+from dateutil.relativedelta import relativedelta # type: ignore
 
 class Campos:
     def texto(tela: str, length: int, tipo: str):
