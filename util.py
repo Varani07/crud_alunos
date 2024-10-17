@@ -1,7 +1,7 @@
 from dao import DAO
 
 from datetime import datetime
-from dateutil.relativedelta import relativedelta # type: ignore
+from dateutil.relativedelta import relativedelta
 
 import os
 

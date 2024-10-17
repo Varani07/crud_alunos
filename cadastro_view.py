@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-from dateutil.relativedelta import relativedelta # type: ignore
+from dateutil.relativedelta import relativedelta
 
 from campos import Campos
 from dao import DAO

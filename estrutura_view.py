@@ -1,7 +1,7 @@
 import os
 from cadastro_view import Cadastro, Pesquisar
 
-class Estrutura:
+class Estrutura():
     def inicio():
         os.system("cls")
         answer = 1
